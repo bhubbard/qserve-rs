@@ -1,0 +1,9 @@
+[package]
+name = "qserve-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Pure-Rust QServe W4A8KV4 (QoQ) quantization, paged KV4 block manager, and continuous batching scheduler"
+
+[dependencies]
+thiserror.workspace = true

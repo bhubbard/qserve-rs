@@ -1,0 +1,15 @@
+[package]
+name = "qserve-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "CLI for QServe W4A8KV4 quantization and paged KV serving simulation"
+
+[[bin]]
+name = "qserve"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+qserve-core = { path = "../qserve-core" }
