@@ -268,3 +268,33 @@ mod tests {
         assert!(max_err < 0.1, "KV4 error too high: {max_err}");
     }
 }
+
+#[cfg(kani)]
+mod kani_proofs {
+    use super::*;
+
+    #[kani::proof]
+    fn verify_i4_pack_unpack_roundtrip() {
+        let lo: i8 = kani::any();
+        let hi: i8 = kani::any();
+        kani::assume((-8..=7).contains(&lo));
+        kani::assume((-8..=7).contains(&hi));
+        let packed = pack_i4_pair(lo, hi);
+        let (u_lo, u_hi) = unpack_i4_pair(packed);
+        assert_eq!(u_lo, lo);
+        assert_eq!(u_hi, hi);
+    }
+
+    #[kani::proof]
+    #[kani::unwind(5)]
+    fn verify_quantize_activations_i8_never_panics() {
+        let vals: [f32; 4] = [kani::any(), kani::any(), kani::any(), kani::any()];
+        for &v in &vals {
+            kani::assume(v.is_finite());
+            kani::assume(v.abs() < 1e6);
+        }
+        let (q, scale) = quantize_activations_i8(&vals);
+        assert_eq!(q.len(), 4);
+        assert!(scale > 0.0 && scale.is_finite());
+    }
+}

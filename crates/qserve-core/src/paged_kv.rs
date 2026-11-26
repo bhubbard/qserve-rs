@@ -222,3 +222,22 @@ mod tests {
         assert_eq!(mgr.num_free_blocks(), 8);
     }
 }
+
+#[cfg(kani)]
+mod kani_proofs {
+    use super::*;
+
+    #[kani::proof]
+    #[kani::unwind(4)]
+    fn verify_block_allocator_conservation() {
+        let mut alloc = BlockAllocator::new(16, 2);
+        assert_eq!(alloc.num_free_blocks(), 2);
+        let b1 = alloc.allocate().expect("b1");
+        let b2 = alloc.allocate().expect("b2");
+        assert_ne!(b1.block_number, b2.block_number);
+        assert_eq!(alloc.num_free_blocks(), 0);
+        alloc.free(b1).expect("free b1");
+        alloc.free(b2).expect("free b2");
+        assert_eq!(alloc.num_free_blocks(), 2);
+    }
+}
